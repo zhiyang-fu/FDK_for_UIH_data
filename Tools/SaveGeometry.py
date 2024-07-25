@@ -108,6 +108,7 @@ class InitGeo:
         geo.pfCouchPosition = bbox.CouchPos
 
         # Detector
+        geo.DetectorInfo = acq.DetectorInfo
         geo.iDetRowNum = acq.SliceNum.item()
         geo.iDetColNum = acq.ChanNum.item()
         geo.bEqualizeDetAngle = True
