@@ -49,14 +49,23 @@ if geo['iFocalSpotNum'] == 2:
 else:
     us_p = torch.tensor(geo['pfDetGamma'])
     f = torch_1d_interp(us, us_p, torch.tensor(proj))
+
+#%% save rebinned to binary data
+with open(os.path.join(data_dir, data_file.replace('zrebin', 'gammarebin')), 'wb') as fid:
+    fid.write(f.numpy().astype(np.float32))
+# %% verify data are saved correctly
+# g = np.reshape(np.fromfile(os.path.join(data_dir, data_file.replace('zrebin', 'gammarebin')), dtype=np.float32),(2400,40,936))
 # %%
-device= 'cuda:5'
-fov = 223
-A = FDK(geo=geo, nz=320, nx=512, fov=fov).to(device)
+device= 'cuda:3'
+fov = 256
+A = FDK(geo=geo, nx=512, fov=fov).to(device)
 # %%
-img = A.inv(torch.tensor(f[:,:,:], dtype=torch.float32).to(device))
+img = A.inv(f.to(device))
 # %%
 ImageSliceViewer3D(img[0], [860,1260])
+# %%
+with open(os.path.join(data_dir.replace('dat_files', 'img_files'), data_file.replace('zrebin', 'torchfdk_fov256')), 'wb') as fid:
+    fid.write(img[0].cpu().numpy().astype(np.float32))
 # %%
 dicom_dir = os.path.join('/home/dpa/mount/D03/Staff/Zhiyang.Fu/DICOM_files',
                         scan_type, scan_anatomy)
