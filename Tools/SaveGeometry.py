@@ -15,7 +15,7 @@ def Initialize_SaveGeometry(Meta, Para, Blackbox):
     [FunctorInfo, Para, Blackbox] = Initialize_SaveGeometry(Meta, Para, Blackbox);
     ---------
     @Meta  : Functor-related variables.
-    @Para : Includes AcqPara and Reconpara. AcqPara defines the acquisition/scan parameters such as focal spot bias, focal spot type, detector angle, SID, TotalViewNum, etc. 
+    @Para : Includes AcqPara and Reconpara. AcqPara defines the acquisition/scan parameters such as focal spot bias, focal spot type, detector angle, SID, TotalViewNum, etc.
             ReconPara defines the reconstruction parameters such as image thickness, FoV, center position, etc.
     @Blackbox  : Variables for each view such as view angle, mA, couch position, etc.
     -------
@@ -39,13 +39,13 @@ def Initialize_SaveGeometry(Meta, Para, Blackbox):
 
 def Process_SaveGeometry(Meta, FunctorInfo, InputData, Para, Blackbox):
     """
-    @description :    
+    @description :
     ---------
     @Meta  : Functor-related variables.
     @FunctorInfo : The functor information which initialized in Initialize_AziRebin. It’s a global structure for storing the variables and data as a global memory disk. We can update
              and change the data and variables in it.
     @InputData  : The input data from previous functor.
-    @Para : Includes AcqPara and Reconpara. AcqPara defines the acquisition/scan parameters such as focal spot bias, focal spot type, detector angle, SID, TotalViewNum, etc. 
+    @Para : Includes AcqPara and Reconpara. AcqPara defines the acquisition/scan parameters such as focal spot bias, focal spot type, detector angle, SID, TotalViewNum, etc.
             ReconPara defines the reconstruction parameters such as image thickness, FoV, center position, etc.
     @Blackbox: Variables for each view such as view angle, mA, couch position, etc.
     -------
@@ -56,7 +56,7 @@ def Process_SaveGeometry(Meta, FunctorInfo, InputData, Para, Blackbox):
     # print(yaml.dump(geo, default_flow_style=False))
     # save geo
     with open(os.path.join(FunctorInfo.Meta.path, FunctorInfo.Meta.name), 'w') as f:
-        yaml.dump(dict(geo), f) 
+        yaml.dump(dict(geo), f)
     return InputData, Para, Blackbox, FunctorInfo
 
 # def Determine_SaveGeometry(Meta, Index, Size, Type, Para, FunctorInfo):
@@ -106,13 +106,13 @@ class InitGeo:
         ## Couch
         geo.iCouchDir = int(acq.CouchDir) if acq.CouchDir != 0 else acq.SliceDir.item()
         geo.pfCouchPosition = bbox.CouchPos
-        
+
         # Detector
         geo.iDetRowNum = acq.SliceNum.item()
         geo.iDetColNum = acq.ChanNum.item()
         geo.bEqualizeDetAngle = True
         #detector angle within the fan, denoted as gamma
-        geo.pfDetGamma = self.getDetGamma(acq.DetectorAngle, geo) #focal spot bias included 
+        geo.pfDetGamma = self.getDetGamma(acq.DetectorAngle, geo) #focal spot bias included
         geo.pfDetChannelSpace = self.getDetChannelSpace(geo.Scanner) #arc spacing
         geo.fDetGammaEqualSpace = self.getDetGammaEqualSpace(geo)
         # pfDetGamma and fDetGammaEqualSpace will be used in FDK
@@ -180,7 +180,7 @@ class InitGeo:
         %   +Y
         %
         %   * ISOCenter
-        
+
         % !! Notice "-" here !!!
         '''
         pfFocalSpotBias_Y = - pfFocalSpotBias_Z / np.tan(geo.fAnodeAngle*np.pi/180)
@@ -221,7 +221,7 @@ class InitGeo:
         elif iFocalSpotNum == 2:
             fViewAngle_new[0::2] = fViewAngle_bbox[0::2] + geo.pfFocalSpotBiasRadian[0]
             fViewAngle_new[1::2] = fViewAngle_bbox[1::2] + geo.pfFocalSpotBiasRadian[1]
-        
+
         # fViewAngle_new[fViewAngle_new<0] = fViewAngle_new[fViewAngle_new<0]  + 2*np.pi
         # fViewAngle_new[fViewAngle_new>2*np.pi] = fViewAngle_new[fViewAngle_new>2*np.pi]  - \
         #     2*np.pi * np.floor(fViewAngle_new[fViewAngle_new>2*np.pi]/(2*np.pi))
@@ -252,7 +252,7 @@ class InitGeo:
                 pfDetGamma[::2] = pfdetAngle_acq[geo.iDetColNum:]
                 pfDetGamma[1::2] = pfdetAngle_acq[:geo.iDetColNum]
         return pfDetGamma
-    
+
     def getDetChannelSpace(self, strScanner):
         ## get the channel detector space
         if (strScanner == 'U16'):
@@ -264,17 +264,17 @@ class InitGeo:
             pfDetectorGammaSpace= LoadMat(r'Toolbox/NoiseRecon/Cache/pfDetectorGammaSpace.mat')
         elif (strScanner == 'PCCT_UHR'):
             pfDetectorGammaSpace= LoadMat(r'Toolbox/NoiseRecon/Cache/pfUHRDetectorGammaSpace.mat')
-        elif (strScanner == 'PCCT_Macro'):  
+        elif (strScanner == 'PCCT_Macro'):
             pfDetectorGammaSpace= LoadMat(r'Toolbox/NoiseRecon/Cache/pfMacroDetectorGammaSpace.mat')
-            
+
         return pfDetectorGammaSpace
-        # fDetectorChannelSpace = pfDetectorGammaSpace/fSDD# channel space  
+        # fDetectorChannelSpace = pfDetectorGammaSpace/fSDD# channel space
         # return   fDetectorChannelSpace
-    
+
     def getDetGammaEqualSpace(self, geo):
         totalDetAngle = abs(geo.pfDetGamma[-1] - geo.pfDetGamma[0]) + \
             (geo.pfDetChannelSpace[-1] + geo.pfDetChannelSpace[0]) / 2 / geo.fSDD
-        fDetGammaEqualSpace = totalDetAngle.item()/geo.iDetColNum 
+        fDetGammaEqualSpace = totalDetAngle.item()/geo.iDetColNum
         return fDetGammaEqualSpace
 
     def getDetRowEqualSpace(self, geo):
