@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import yaml
 
-from torch_fdk import FDK
+from Tools.torch_fdk import FDK
 from Tools.imview3d import ImageSliceViewer3D
 from Tools.write_dicom import write_array_to_dicom
 from Tools.interp import torch_1d_interp
