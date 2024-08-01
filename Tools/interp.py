@@ -23,28 +23,20 @@ def torch_1d_interp(
         The interpolated values, same shape as x.
     """
     if left is None:
-        left = fp[0]
+        left = fp[...,[0]]
 
     if right is None:
-        right = fp[-1]
+        right = fp[...,[-1]]
 
     i = torch.clip(torch.searchsorted(xp, x, right=True), 1, len(xp) - 1)
-    if fp.shape[0] == len(x):
-        fp = fp.permute(1,2,0)
-        permute_order = (2,0,1)
-    elif fp.shape[1] == len(x):
-        fp = fp.permute(0,2,1)
-        permute_order = (0,2,1)
-    else:
-        permute_order = (0,1,2)
+    assert(fp.shape[-1]== len(xp))
 
     answer = torch.where(
         x < xp[0],
         left,
-        (fp[:,:,i - 1] * (xp[i] - x) + fp[:,:,i] * (x - xp[i - 1])) / (xp[i] - xp[i - 1]),
+        (fp[...,i - 1] * (xp[i] - x) + fp[...,i] * (x - xp[i - 1])) / (xp[i] - xp[i - 1]),
     )
     answer = torch.where(x > xp[-1], right, answer)
-    answer = answer.permute(permute_order)
     return answer
 # %%
 if __name__ == "__main__":
